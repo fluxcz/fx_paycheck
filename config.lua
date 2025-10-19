@@ -9,11 +9,11 @@ fx.notifysystem = 'ox_lib'
     'bank' 
     'cash' 
     'item' (Make sure to use this option if you are using ox_inventory and you want that players receive it in cash) ]]
-fx.paymentmethod = 'item'
+fx.paymentmethod = 'bank'
 fx.itemname = 'money'
 
 -- How often will players receive their paycheck (in minutes)
-fx.paycheckinterval = 0
+fx.paycheckinterval = 15
 
 -- If certain job isnt configured in fx.jobs the players will receive this amount
 fx.defaultpay = 500
