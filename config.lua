@@ -1,7 +1,5 @@
 fx = {}
 
-fx.debugmode = false
-
 --[[ Choose your preferred notification system
     'esx'
     'ox_lib' (requires ox_lib) ]]
