@@ -1,5 +1,5 @@
 ESX = exports["es_extended"]:getSharedObject()
-local version = '1.0'
+local version = '1.1'
 
 CreateThread(function()
     PerformHttpRequest('https://raw.githubusercontent.com/fluxcz/versions/refs/heads/main/all.json', function(err, text, headers)
