@@ -21,11 +21,27 @@ fx.defaultpay = 500
 fx.enabletaxes = true
 fx.taxrate = 15
 
+--[[ Jobs
+    You can set salaries in 2 ways
+    1. Same salary for all grades ['jobname'] = 5000
+    2. Individual salary per grade ['jobname'] = { [0] = 1000, [1] = 2000, [2] = 3000 }
+]]
 fx.jobs = {
-    ['police'] = 5000,
-    ['ambulance'] = 4500,
-    ['mechanic'] = 3500,
+    ['police'] = {
+        [0] = 3000,  
+        [1] = 3500,  
+        [2] = 4000,  
+        [3] = 4500,  
+        [4] = 5000, 
+        [5] = 5500,  
+    },
+    ['ambulance'] = {
+        [0] = 2500,  
+        [1] = 3000,  
+        [2] = 3500,  
+        [3] = 4000, 
+        [4] = 4500, 
+    },
+    ['mechanic'] = 3500,  -- Same salary for all grades
     ['unemployed'] = 250,
 }
-
-
