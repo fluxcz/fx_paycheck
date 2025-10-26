@@ -29,7 +29,6 @@ CreateThread(function()
     end, 'GET', '', {})
 end)
 
-
 CreateThread(function()
     while true do
         Wait(fx.paycheckinterval * 60000)
@@ -39,7 +38,18 @@ CreateThread(function()
 
             if xplayer then
                 local playerjob = xplayer.getJob().name
-                local basesalary = fx.jobs[playerjob] or fx.defaultpay
+                local playergrade = xplayer.getJob().grade
+                local basesalary = fx.defaultpay
+
+                if fx.jobs[playerjob] then
+                    local jobconfig = fx.jobs[playerjob]
+                    
+                    if type(jobconfig) == 'table' then
+                        basesalary = jobconfig[playergrade] or jobconfig[0] or fx.defaultpay
+                    else
+                        basesalary = jobconfig
+                    end
+                end
 
                 local taxamount = 0
                 local finalamount = basesalary
@@ -67,4 +77,3 @@ CreateThread(function()
         end
     end
 end)
-
