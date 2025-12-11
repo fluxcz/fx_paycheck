@@ -1,37 +1,46 @@
 ESX = exports["es_extended"]:getSharedObject()
-local version = '1.1'
+
+if GetCurrentResourceName() ~= 'fx_paycheck' then
+    CreateThread(function()
+        while true do
+            print('^1[FX_PAYCHECK] This resource must be named "fx_paycheck" to remain functioning!^7')
+            print('^1Current name: "' .. GetCurrentResourceName() .. '" - Please rename it to "fx_paycheck".^7')
+            Wait(60000)
+        end
+    end)
+    return
+end
+
+local version = '1.2'
 
 CreateThread(function()
-    PerformHttpRequest('https://raw.githubusercontent.com/fluxcz/versions/refs/heads/main/all.json', function(err, text, headers)
-        if text then
-            local data = json.decode(text)
-            if data and data['fx-paycheck'] then
-                local newestversion = data['fx-paycheck'].latest
-                if newestversion and newestversion > version then
-                    print('^1-------------------------------------------------^7')
-                    print('^6New Version Released for fx_paycheck^7')
-                    print('')
-                    print(string.format('^1Your Version: ^7%s', version))
-                    print(string.format('^6Newest Version: ^7%s', newestversion))
-                    print('')
-                    print('^6Changelog^7')
-                    for i, change in ipairs(data['fx-paycheck'].changelog) do
-                        print(string.format('^7%s', change))
-                    end
-                    print('^1-------------------------------------------------^7')
-                else
-                    print('^6[fx_paycheck] You are running the latest version.^7')
-                end
-            end
-        else
+    PerformHttpRequest('https://api.github.com/repos/fluxcz/fx_paycheck/releases/latest', function(err, text, headers)
+        if err ~= 200 then
             print('^1[fx_paycheck] Could not check for new version.^7')
+            return
         end
-    end, 'GET', '', {})
+
+        local data = json.decode(text)
+        if data.tag_name == version then
+            print('^6[fx_paycheck] You are running the latest version.^7')
+        else
+            print('^1-------------------------------------------------')
+            print('^6New Version Released for fx_paycheck\n')
+            print('^7Your Version: ^1'..version)
+            print('^7Newest Version: ^6'..data.tag_name..'\n')
+            print('^6Changelog:^7')
+            print(data.body..'\n')
+            print('Get the updated version: https://github.com/fluxcz/fx_paycheck/archive/refs/tags/'..data.tag_name..'.zip')
+            print('^1-------------------------------------------------^7')
+        end
+    end, 'GET')
 end)
 
 CreateThread(function()
     while true do
-        Wait(fx.paycheckinterval * 60000)
+        local interval = fx.paycheckinterval
+        if interval < 1 then interval = 15 end
+        Wait(interval * 60000)
 
         for _, playerid in ipairs(GetPlayers()) do
             local xplayer = ESX.GetPlayerFromId(playerid)
@@ -41,7 +50,15 @@ CreateThread(function()
                 local playergrade = xplayer.getJob().grade
                 local basesalary = fx.defaultpay
 
-                if fx.jobs[playerjob] then
+                if fx.usedatabase then
+                    if MySQL then
+                        local query = 'SELECT salary FROM job_grades WHERE job_name = ? AND grade = ?'
+                        local salary = MySQL.scalar.await(query, {playerjob, playergrade})
+                        if salary then
+                            basesalary = salary
+                        end
+                    end
+                elseif fx.jobs[playerjob] then
                     local jobconfig = fx.jobs[playerjob]
                     
                     if type(jobconfig) == 'table' then
@@ -54,6 +71,7 @@ CreateThread(function()
                 local taxamount = 0
                 local finalamount = basesalary
 
+                -- tax
                 if fx.enabletaxes then
                     taxamount = (finalamount / 100) * fx.taxrate
                     finalamount = finalamount - taxamount
