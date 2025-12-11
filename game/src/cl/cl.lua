@@ -1,19 +1,21 @@
 local ESX = exports["es_extended"]:getSharedObject()
 
 RegisterNetEvent('fx:paycheck:notify', function(basesalary, taxamount, taxrate, finalamount, paymentmethod, itemname)
+    local Strings = Locales[fx.locale]
+
     if fx.notifysystem == 'esx' then
         local finalmessage
         if paymentmethod == 'bank' then
-            finalmessage = string.format("You received: ~g~$%s", finalamount)
+            finalmessage = string.format(Strings['received_bank'], finalamount)
         elseif paymentmethod == 'cash' then
-            finalmessage = string.format("You received: ~g~$%s", finalamount)
+            finalmessage = string.format(Strings['received_cash'], finalamount)
         elseif paymentmethod == 'item' then
-            finalmessage = string.format("You received: ~g~%s", itemname)
+            finalmessage = string.format(Strings['received_item'], itemname)
         end
 
-        local message = string.format("Base Salary: $%s", basesalary)
+        local message = string.format(Strings['base_salary'], basesalary)
         if fx.enabletaxes and taxamount > 0 then
-            message = message .. string.format("~n~Tax (%s%%)", taxrate, taxamount)
+            message = message .. string.format(Strings['tax'], taxrate, taxamount)
         end
         message = message .. finalmessage
         ESX.ShowNotification(message)
@@ -21,22 +23,22 @@ RegisterNetEvent('fx:paycheck:notify', function(basesalary, taxamount, taxrate, 
     elseif fx.notifysystem == 'ox_lib' then
         local finaltext
         if paymentmethod == 'bank' then
-            finaltext = string.format("\n\nYou received: $%s", finalamount)
+            finaltext = string.format(Strings['lib_received_bank'], finalamount)
         elseif paymentmethod == 'cash' then
-            finaltext = string.format("\n\nYou received: $%s", finalamount)
+            finaltext = string.format(Strings['lib_received_cash'], finalamount)
         elseif paymentmethod == 'item' then
-            finaltext = string.format("\n\nYou received: $%s", finalamount)
+            finaltext = string.format(Strings['lib_received_item'], finalamount)
         end
         
-        local text = string.format("Base Salary: $%s", basesalary)
+        local text = string.format(Strings['lib_base_salary'], basesalary)
         if fx.enabletaxes and taxamount > 0 then
-            text = text .. string.format("\nTax (%s%%)", taxrate, taxamount)
+            text = text .. string.format(Strings['lib_tax'], taxrate, taxamount)
         end
         text = text .. finaltext
 
         exports.ox_lib:notify({
             id = 'fx_paycheck',
-            title = 'Paycheck Received',
+            title = Strings['lib_title'],
             description = text,
             type = 'success',
             icon = 'money-bill-wave',
@@ -46,22 +48,22 @@ RegisterNetEvent('fx:paycheck:notify', function(basesalary, taxamount, taxrate, 
     else 
         local finaltext
         if paymentmethod == 'bank' then
-            finaltext = string.format("\n\nDeposited to bank: $%s", finalamount)
+            finaltext = string.format(Strings['other_received_bank'], finalamount)
         elseif paymentmethod == 'cash' then
-            finaltext = string.format("\n\nReceived in cash: $%s", finalamount)
+            finaltext = string.format(Strings['other_received_cash'], finalamount)
         elseif paymentmethod == 'item' then
-            finaltext = string.format("\n\nReceived item: %s", itemname)
+            finaltext = string.format(Strings['other_received_item'], itemname)
         end
 
-        local text = string.format("Base Salary: $%s", basesalary)
+        local text = string.format(Strings['base_salary'], basesalary)
         if fx.enabletaxes and taxamount > 0 then
-            text = text .. string.format("\nTax (%s%%): -$%s", taxrate, taxamount)
+            text = text .. string.format(Strings['other_tax'], taxrate, taxamount)
         end
         text = text .. finaltext
 
         exports.ox_lib:notify({
             id = 'fx_paycheck',
-            title = 'Paycheck Received',
+            title = Strings['lib_title'],
             description = text,
             type = 'success',
             icon = 'money-bill-wave',
